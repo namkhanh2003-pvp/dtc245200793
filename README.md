@@ -1,160 +1,159 @@
 # Bếp Nhà — Đề 29: Website công thức nấu ăn
 
-Bài thực hành cá nhân môn Triển khai và Quản trị Hệ thống Phần mềm. Ứng dụng PHP lưu món ăn, nguyên liệu và danh mục trong MySQL, quản lý dữ liệu bằng phpMyAdmin. Bản này bổ sung giao diện và Nginx; giám sát, log tập trung, GitHub và báo cáo cần hoàn thiện ở các bước tiếp theo.
+Bài thực hành **cá nhân** môn Triển khai và Quản trị Hệ thống Phần mềm.
+MSSV: **dtc245200793**.
+Repository: https://github.com/namkhanh2003-pvp/dtc245200793
 
-## Chức năng hiện có
+Website PHP 8.4/Apache lưu công thức, nguyên liệu và danh mục trong MySQL 8.4; phpMyAdmin quản lý DB. Nginx làm reverse proxy có security headers. Prometheus/Grafana, các exporter và dashboard đã chạy trên Docker Desktop của sinh viên, có dữ liệu giám sát container/web/MySQL. Loki/Promtail và báo cáo chưa hoàn thành.
 
-- Danh sách công thức, tìm kiếm tên món và lọc theo danh mục.
-- Trang chi tiết có thời gian, khẩu phần, nguyên liệu và các bước chế biến.
-- Đánh dấu nguyên liệu đã chuẩn bị trong lần mở trang; trạng thái không lưu vào DB.
-- Gợi ý công thức khác, giao diện thích ứng với máy tính và điện thoại.
-- Ba món mẫu: trứng chiên hành lá, canh rau ngót thịt băm, cơm chiên trứng cà rốt.
+## Chức năng
 
-Chưa có trang quản trị thêm/sửa/xóa hoặc tài khoản đăng bài trên website. Hiện nội dung được nhập qua SQL/phpMyAdmin. Có thể bổ sung quản trị nếu cần mở rộng chức năng chia sẻ công thức.
+- Xem danh sách món, tìm kiếm theo tên và lọc danh mục.
+- Chi tiết thời gian, khẩu phần, nguyên liệu và các bước nấu; gợi ý món liên quan.
+- Đánh dấu nguyên liệu đã chuẩn bị trong lần mở trang, không lưu trạng thái vào DB.
+- Giao diện máy tính/điện thoại, ảnh món và phông tiếng Việt lưu cục bộ.
+- Dữ liệu mẫu: trứng chiên hành lá, canh rau ngót thịt băm, cơm chiên trứng cà rốt.
 
-## Cấu trúc mã nguồn
+Nội dung được quản lý bằng SQL/phpMyAdmin; chưa có tài khoản người đăng hoặc CRUD trên website. Đề 29 không liệt kê CRUD/đăng nhập bắt buộc; bổ sung khi cần mở rộng hoặc giảng viên yêu cầu.
 
-```text
-app/                       PHP, CSS và ảnh món ăn
-database/                  Schema và dữ liệu mẫu
-nginx/default.conf         Reverse proxy và security headers
-docs/TIEN_DO.md             Đối chiếu tiến độ với đề bài
-Dockerfile                 PHP 8.4 + Apache, chạy với www-data
-docker-compose.yml         MySQL, phpMyAdmin, web và Nginx
-.env.example               Mẫu biến môi trường, không có mật khẩu
-```
+## Dịch vụ và đường dẫn
 
-## Cập nhật dự án Windows đang chạy
+| Thành phần | Truy cập |
+| --- | --- |
+| Website qua Nginx | http://localhost:18080 |
+| phpMyAdmin | http://localhost:18081 |
+| Prometheus targets | http://localhost:18082/targets |
+| Grafana | http://localhost:18083 |
+| Dashboard | http://localhost:18083/d/bep-nha-monitoring/ |
+| MySQL và các exporter | Chỉ qua mạng Docker, không công bố cổng host |
 
-1. Giải nén `bep-nha-update.zip` ra một thư mục riêng.
-2. Mở thư mục đã giải nén, sao chép toàn bộ nội dung bên trong vào `C:\Users\basiu\recipe-website`. Khi Windows hỏi trùng tệp, chọn **Replace the files in the destination**. Các thư mục `app`, `database`, `nginx`, `docs` sẽ được gộp với thư mục tương ứng.
-3. Giữ nguyên file mật khẩu `.env` của dự án. Gói cập nhật chỉ có `.env.example` trống, không thay thế `.env`.
-4. Bật Docker Desktop. Mở CMD và chạy:
+Các published ports bind `127.0.0.1`. Grafana username là `admin`; mật khẩu được script thiết lập tạo và lưu tại `.env` trên máy thực hiện. phpMyAdmin dùng `recipe_user` và `MYSQL_PASSWORD`.
+
+## File cấu hình
+
+| Đường dẫn | Nội dung |
+| --- | --- |
+| app/ | PHP, CSS, ảnh và phông |
+| database/ | Schema và seed |
+| nginx/default.conf | Reverse proxy, headers, listener stub_status nội bộ |
+| docker-compose.yml | MySQL, phpMyAdmin, web, Nginx |
+| docker-compose.override.yml | Thêm 6 dịch vụ giám sát và mạng monitoring |
+| monitoring/setup.ps1 | Tạo mật khẩu và tài khoản MySQL giám sát |
+| monitoring/prometheus.yml | Scrape targets, lọc container theo project |
+| monitoring/blackbox.yml | Probe HTTP/nội dung trang chủ |
+| monitoring/grafana/ | Datasource và dashboard được provision |
+| docs/BUOC_2_GIAM_SAT.md | Các bước Windows và điều kiện kiểm chứng commit 2 |
+| docs/TIEN_DO.md | Đối chiếu tiến độ với tiêu chí đề |
+| .env.example | Mẫu môi trường trống, không chứa mật khẩu |
+
+Compose tự đọc file cơ bản và override. Có thể dùng `-f docker-compose.yml` để chỉ chạy phần cơ bản khi cần thiết lập ban đầu.
+
+## Cập nhật máy Windows hiện tại
+
+Website, MySQL, phpMyAdmin và Nginx đang chạy trong `C:\Users\basiu\recipe-website`.
+Giải nén `bep-nha-giam-sat.zip`, chép **các mục bên trong** vào thư mục này và thay thế tệp trùng tên. Giữ nguyên `.env` và volume MySQL.
+
+Tại CMD, chạy từng lệnh:
 
 ```bat
 cd /d C:\Users\basiu\recipe-website
+powershell -NoProfile -ExecutionPolicy Bypass -File .\monitoring\setup.ps1
 docker compose config --quiet
-```
-
-Nếu lệnh kiểm tra không báo lỗi, chạy:
-
-```bat
-docker compose up -d --build
+docker compose up -d
 docker compose ps
 ```
 
-5. Mở `http://localhost:18080` và nhấn **Ctrl + F5**. phpMyAdmin vẫn ở `http://localhost:18081`.
+Chỉ chạy lệnh tiếp khi lệnh trước thành công. Script dùng root bên trong DB để tạo tài khoản giám sát, không in mật khẩu. Mỗi mật khẩu mới được sinh từ 32 byte ngẫu nhiên và lưu dưới dạng 64 ký tự hexadecimal. Chạy lại dùng cùng mật khẩu đã tạo; không đổi hai mật khẩu MySQL cũ và không nhập lại seed.
 
-Bản cập nhật giữ tên volume `mysql_data` và tên thư mục dự án để sử dụng dữ liệu cũ. File SQL trong `database` chỉ tự chạy khi MySQL khởi tạo một volume trống; không cần nhập lại seed vào DB đã có dữ liệu. Không dùng `docker compose down -v` vì lệnh đó xóa volume của dự án.
+## Cài từ GitHub trên máy mới
 
-## Chạy từ bản mã nguồn mới
-
-Yêu cầu Docker Desktop có Docker Compose. Mở terminal tại thư mục chứa `docker-compose.yml`, sao chép mẫu môi trường:
+Yêu cầu Git và Docker Desktop chạy **Linux containers**.
 
 ```bat
+git clone https://github.com/namkhanh2003-pvp/dtc245200793.git recipe-website
+cd recipe-website
 copy .env.example .env
 notepad .env
 ```
 
-Điền hai mật khẩu mạnh, khác nhau, sau dấu `=`. Không đưa `.env` lên GitHub. Các giá trị phải theo cú pháp file môi trường của Docker Compose; nếu dùng ký tự đặc biệt, tham khảo tài liệu Docker được liên kết cuối README. Lưu rồi chạy `docker compose config --quiet`; khi hợp lệ, chạy `docker compose up -d --build`. MySQL tạo DB `recipe_db` và tài khoản `recipe_user` từ các biến môi trường. Đăng nhập phpMyAdmin bằng `recipe_user` và giá trị `MYSQL_PASSWORD` do bạn đặt.
+Điền hai mật khẩu mạnh, khác nhau cho `MYSQL_ROOT_PASSWORD` và `MYSQL_PASSWORD`, lưu rồi đóng. Giữ trống hai biến giám sát để script tự tạo. Không đưa `.env` lên GitHub.
 
-## Kiểm tra Nginx và lấy minh chứng
-
-Chạy tại thư mục dự án:
+Chạy phần cơ bản trước:
 
 ```bat
-docker compose ps
-docker compose exec nginx nginx -t
-curl.exe -I http://localhost:18080
-docker compose exec web id
-docker compose logs --tail=50 nginx web
+docker compose -f docker-compose.yml config --quiet
+docker compose -f docker-compose.yml up -d --build
+docker compose -f docker-compose.yml ps
 ```
 
-Kết quả cần quan sát:
-
-- Bốn dịch vụ chạy; healthcheck của `db`, `web`, `nginx` thành công.
-- `nginx -t` báo cấu hình hợp lệ.
-- Website trả HTTP 200 và có `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Content-Security-Policy`.
-- Lệnh `id` trong web hiển thị `www-data`, không phải root.
-- Trang chủ tải ảnh/CSS, tìm kiếm và trang chi tiết hoạt động; phpMyAdmin xem được dữ liệu.
-
-Chụp màn hình các kết quả này cho báo cáo. Nếu phát sinh lỗi, lấy `docker compose ps` và log ở trên; không gửi ảnh chứa mật khẩu.
-
-## Kiến trúc và biện pháp bảo mật đã cấu hình
-
-Trình duyệt vào cổng `18080` của Nginx. Nginx chuyển yêu cầu đến Apache/PHP tại `web:8080`. Web truy cập MySQL qua mạng backend; phpMyAdmin sử dụng backend để quản lý DB và mạng `admin` riêng để công bố giao diện ở `127.0.0.1:18081`.
-
-- Web chạy với `USER www-data` và cổng không đặc quyền `8080`.
-- Nginx chỉ ở mạng frontend; DB chỉ ở backend nội bộ và không công bố cổng MySQL ra máy chủ.
-- Web không mở cổng host trực tiếp; website đi qua Nginx. Website và phpMyAdmin chỉ bind `127.0.0.1` trên máy đang chạy.
-- Web bỏ toàn bộ Linux capabilities và bật `no-new-privileges`; Nginx cũng bật `no-new-privileges`.
-- Mount mã nguồn và cấu hình ở chế độ chỉ đọc.
-- Nginx có bốn security headers, ẩn phiên bản Nginx và header `X-Powered-By`.
-- Web dùng `recipe_user` thay cho MySQL root; truy vấn có tham số và đầu ra HTML được escape.
-- File mật khẩu được loại khỏi Git và Docker build context. Cần tự đặt mật khẩu mạnh và kiểm tra quyền DB thực tế.
-
-Đề cho phép **HTTPS tự ký hoặc security headers cơ bản**; bản này chọn security headers. Các biện pháp trên phải được kiểm tra trên Docker của người thực hiện trước khi ghi là hoàn thành trong báo cáo.
-
-## Phạm vi đã kiểm tra
-
-Đã kiểm tra mã PHP và giao diện bằng PHP-WASM 8.4 với DB SQLite chứa dữ liệu mẫu tương đương. Kiểm tra trình duyệt gồm desktop 1440px, mobile 390px, CSS/ảnh, tìm kiếm, danh mục, kết quả rỗng, tham số truy vấn, escape HTML, trang chi tiết, checkbox nguyên liệu, món liên quan và HTTP 404. Chính sách CSP tương ứng cấu hình Nginx đã được áp dụng trong kiểm tra trình duyệt.
-
-Môi trường kiểm tra tự động không chạy Docker/MySQL/Nginx thật. Người thực hiện đã xác nhận website/MySQL trên Windows; đã cung cấp minh chứng Nginx test thành công, HTTP 200 qua Nginx, đủ bốn security headers và `uid=33(www-data)` trong web. Sau đổi mạng, phpMyAdmin không truy cập được; bản sửa thêm mạng `admin` vẫn cần chạy và xác nhận trên máy người thực hiện.
-
-## Sửa phpMyAdmin không truy cập được
-
-Container phpMyAdmin đã chạy nhưng `docker compose ps` chỉ hiện `80/tcp`, không có ánh xạ `127.0.0.1:18081`. Trình duyệt báo `ERR_CONNECTION_REFUSED`. Cấu hình trước chỉ nối phpMyAdmin vào backend `internal: true`; tình huống này khớp báo cáo Docker bỏ qua published ports khi container chỉ thuộc mạng nội bộ.
-
-Bản sửa nối phpMyAdmin vào cả backend và một mạng bridge `admin` riêng. MySQL giữ nguyên backend nội bộ, không công bố cổng; phpMyAdmin vẫn chỉ bind loopback `127.0.0.1:18081:80`. Volume `mysql_data`, tài khoản và mật khẩu giữ nguyên.
-
-Áp dụng `bep-nha-sua-phpmyadmin.zip` bằng cách giải nén, sao chép các mục bên trong vào thư mục dự án và thay thế tệp trùng tên. Sau đó tại CMD trong thư mục dự án, chạy từng lệnh và đợi xong trước khi nhập lệnh tiếp:
+Sau khi DB/web/Nginx healthy, chạy bước thiết lập và toàn hệ thống:
 
 ```bat
+powershell -NoProfile -ExecutionPolicy Bypass -File .\monitoring\setup.ps1
 docker compose config --quiet
+docker compose up -d
+docker compose ps
 ```
 
-Nếu không báo lỗi:
+Seed chỉ tự chạy khi MySQL khởi tạo volume trống. Không dùng `docker compose down -v` trên dự án có dữ liệu cần giữ.
 
-```bat
-docker compose up -d --no-deps --force-recreate phpmyadmin
-docker compose ps phpmyadmin
-curl.exe -I http://127.0.0.1:18081
-```
+## Kiểm chứng và demo
 
-Lệnh `up` chỉ tạo lại phpMyAdmin để áp dụng mạng mới, dùng DB hiện đang chạy. Kết quả cần có `127.0.0.1:18081->80/tcp` và một HTTP response từ phpMyAdmin; sau đó mở `http://localhost:18081`, đăng nhập bằng `recipe_user` và mật khẩu DB đã đặt. Không nhập lại SQL seed và không xóa volume.
+Hướng dẫn đầy đủ ở [docs/BUOC_2_GIAM_SAT.md](docs/BUOC_2_GIAM_SAT.md).
 
-Nếu vẫn lỗi, lấy `docker compose logs --tail=50 phpmyadmin` và ảnh kết quả `docker compose ps phpmyadmin`. Chi tiết ở `docs/SUA_PHPMYADMIN.md`.
+1. Kiểm tra website, tìm kiếm, chi tiết món và phpMyAdmin.
+2. Chạy `docker compose exec -T nginx nginx -t`, `curl.exe -I http://localhost:18080` và `docker compose exec -T web id`.
+3. Sáu Prometheus targets UP. Các truy vấn `probe_success{job="website"}`, `nginx_up{job="nginx"}`, `mysql_up{job="mysql"}` phải bằng 1.
+4. cAdvisor phải có CPU/RAM gắn nhãn service cho db/web/nginx/phpMyAdmin, không chỉ target UP.
+5. Đăng nhập Grafana, mở dashboard. Đợi 2–3 phút cho biểu đồ tốc độ; truy cập website để tạo lưu lượng.
+6. Giữ ảnh Compose, targets và dashboard. Chỉ tạo commit 2 khi đủ dữ liệu thật.
 
-## Bản sửa chữ tiếng Việt
+CPU có thể vượt 100% khi dùng nhiều lõi. HTTP probe không đo thời gian tải toàn bộ trang trong trình duyệt. MySQL có truy vấn giám sát nền. Số 0 khác với No data.
 
-Ảnh chạy trên Windows cho thấy một số tiêu đề có chữ mang dấu bị giãn bất thường. Bản sửa dùng Noto Serif Regular/Italic được lưu ngay trong `app/assets/fonts/`, bỏ khoảng cách chữ âm ở tiêu đề và điều chỉnh cỡ chữ trên màn hình nhỏ. Hai trang PHP dùng `style.css?v=4` để tránh lấy CSS cũ từ bộ nhớ đệm.
+Nếu lỗi, dùng `docker compose ps` và `docker compose logs --tail=60 TEN_DICH_VU`; không gửi file hoặc ảnh chứa mật khẩu. Cấu hình Prometheus giữ metrics container thuộc project `recipe-website`, do đó giữ tên thư mục clone như lệnh trên.
 
-Phông được lấy nguyên tệp từ kho chính thức https://github.com/notofonts/noto-fonts/tree/main/hinted/ttf/NotoSerif; giấy phép SIL Open Font License 1.1 được giữ ở `app/assets/fonts/OFL.txt`. Browser lấy phông từ chính website, phù hợp CSP `font-src 'self'`.
+## Hardening
 
-Đã kiểm tra trình duyệt thực sự dùng phông nhúng cho toàn bộ chữ trong “Ấm lòng mỗi bữa.”, “Trứng chiên hành lá” và “Cơm chiên trứng cà rốt”, không dùng xen phông dự phòng. Trang chi tiết cũng được kiểm tra không tràn ngang ở 320px và 390px. Người thực hiện cần áp dụng gói và xác nhận kết quả trên Windows.
+- Web chạy `www-data`, cổng 8080, bỏ Linux capabilities và bật no-new-privileges.
+- DB chỉ nối backend internal và không công bố cổng 3306; web không có published port trực tiếp.
+- Website, phpMyAdmin, Prometheus, Grafana bind loopback; exporter không công bố cổng host.
+- Mã nguồn/cấu hình/dashboard mount chỉ đọc.
+- Bốn security headers Nginx; ẩn phiên bản và X-Powered-By.
+- PHP dùng recipe_user, prepared statements và escape đầu ra HTML.
+- Tài khoản giám sát DB có quyền đọc/process/replication-client, không ghi/DDL và tối đa 3 kết nối. Mật khẩu root chỉ dùng khi thiết lập.
+- Grafana tắt đăng ký và đăng nhập ẩn danh.
+- .env được loại khỏi Git và Docker build context.
 
-Để áp dụng `bep-nha-sua-chu.zip`, giải nén, sao chép các mục bên trong vào thư mục dự án hiện có và thay thế tệp trùng tên, sau đó Ctrl + F5. Compose đang bind-mount thư mục `app`, nên bản sửa này không cần build lại container. Các bước kiểm chứng Nginx và chuẩn bị commit 1 nằm ở `docs/BUOC_1_NGINX.md`.
+**Ngoại lệ cần giải thích:** cAdvisor chạy privileged để quan sát cgroups/Docker của Linux VM; mount chỉ đọc không biến Docker socket thành API chỉ đọc. Không tuyên bố mọi container đều non-root hoặc đều bị loại mọi quyền.
 
-## Ảnh minh họa
+Đề cho phép HTTPS tự ký **hoặc** security headers cơ bản; website chọn headers. Các biện pháp cần có minh chứng thực tế trước khi ghi hoàn tất.
 
-Ba ảnh được tạo bằng công cụ imagegen tích hợp, chế độ tạo ảnh mới (built-in generate), rồi sao chép vào dự án dưới dạng PNG. Đây là ảnh minh họa AI, không phải ảnh chụp món do sinh viên tự nấu. Không có chữ, logo hoặc watermark.
+## Tiến độ và phạm vi kiểm tra
 
-Mô tả bộ ảnh: ảnh đồ ăn Việt Nam chân thực, ánh sáng tự nhiên dịu, đồ gốm tông kem, mặt bàn gỗ và vải linen màu be, bố cục ngang để dùng ở trang chủ và thẻ công thức. Ba chủ thể lần lượt là trứng chiên hành lá vàng nhẹ, canh rau ngót thịt băm trong bát gốm, và cơm chiên trứng cà rốt có hành lá. Bộ ảnh hướng tới cùng phong cách ấm áp, đơn giản và phù hợp giao diện màu kem/xanh lá.
+Commit 1 `3284f30` đã được đẩy lên main ngày 02/10/2026: website + Nginx.
+Ảnh Windows xác nhận Git sạch/đồng bộ; DB/web/Nginx healthy; phpMyAdmin chạy và đã đăng nhập thành công; nginx -t, HTTP 200, bốn headers và www-data đã được kiểm tra.
 
-Đường dẫn trong mã nguồn: `app/assets/egg.png`, `app/assets/soup.png`, `app/assets/rice.png`. Logo và icon được viết bằng SVG trong mã nguồn.
+Đã kiểm tra giao diện bằng PHP-WASM 8.4/SQLite fixture và trình duyệt desktop/mobile; kiểm tra phông nhúng, tìm kiếm/lọc, escape, chi tiết và 404. Môi trường đó không thay cho MySQL/Docker thực tế.
 
-## Các bước tiếp theo theo đề
+Cấu hình giám sát đã qua Docker Compose CLI và promtool 3.13.4 (cấu hình + 12 truy vấn dashboard). Script đã qua parser PowerShell và kiểm thử biệt lập bằng dữ liệu giả.
 
-1. Xác nhận bản giao diện mới và Nginx chạy được.
-2. Tạo GitHub theo mã số sinh viên, đưa mã nguồn/cấu hình/README lên và tạo commit 1 về Nginx.
-3. Thêm Prometheus, Grafana và exporter cho container/web/DB; xây dashboard; commit 2.
-4. Thêm Loki, Promtail; kiểm tra tập trung log và viết 2–3 truy vấn LogQL; commit 3.
-5. Kiểm chứng ít nhất 3–4 biện pháp hardening và thu thập minh chứng.
-6. Viết báo cáo cá nhân tối thiểu 10 trang, có bìa thông tin sinh viên, kiến trúc, cách hoạt động và kết quả; chuẩn bị demo toàn hệ thống.
+Minh chứng trên máy Windows được đối chiếu ngày **03/10/2026, giờ Việt Nam**: script báo `Monitoring setup complete.`, Compose có 10 dịch vụ chạy và truy vấn `up` trả về 6 target bằng 1. Dashboard có Website/MySQL/Nginx UP, 10 container và các biểu đồ CPU, RAM, mạng, request/kết nối Nginx, thời gian phản hồi trang chủ, kết nối/tốc độ truy vấn MySQL. Đã đủ dữ liệu để tạo commit 2. Chưa đối chiếu `SHOW GRANTS` để chứng minh toàn bộ quyền tài khoản DB, và chưa xác nhận commit 2 đã được push.
 
-## Tài liệu kỹ thuật
+Còn lại: tạo/push commit 2; Loki/Promtail và 2–3 LogQL query rồi commit 3; minh chứng hardening; báo cáo cá nhân tối thiểu 10 trang và demo. Tên tài khoản GitHub hiện tại là namkhanh2003-pvp, khác MSSV; yêu cầu đặt tên tài khoản theo MSSV vẫn cần đối chiếu với giảng viên.
+
+## Ảnh và phông
+
+Ba ảnh món trong app/assets được tạo bằng công cụ imagegen tích hợp, chế độ tạo ảnh mới; đây là ảnh minh họa AI, không phải ảnh tự chụp của sinh viên. Ảnh mô tả đồ ăn Việt Nam, ánh sáng tự nhiên dịu, đồ gốm tông kem, bàn gỗ/vải linen, phong cách phù hợp giao diện xanh lá/kem. Logo và icon viết bằng SVG.
+
+Noto Serif Regular/Italic được lấy nguyên tệp từ kho chính thức https://github.com/notofonts/noto-fonts/tree/main/hinted/ttf/NotoSerif. Giữ SIL OFL 1.1 tại app/assets/fonts/OFL.txt; phông/ảnh được phục vụ cùng website, phù hợp CSP.
+
+## Tài liệu chính thức
 
 - Docker Compose: https://docs.docker.com/compose/
-- Biến môi trường Compose: https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/
-- Nginx proxy module: https://nginx.org/en/docs/http/ngx_http_proxy_module.html
-- Nginx headers module: https://nginx.org/en/docs/http/ngx_http_headers_module.html
+- Compose merge: https://docs.docker.com/compose/how-tos/multiple-compose-files/merge/
+- Biến môi trường: https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/
+- Nginx: https://nginx.org/en/docs/http/ngx_http_proxy_module.html
+- Prometheus: https://prometheus.io/docs/prometheus/latest/configuration/configuration/
+- MySQL exporter: https://github.com/prometheus/mysqld_exporter
+- cAdvisor: https://github.com/google/cadvisor
+- Grafana provisioning: https://grafana.com/docs/grafana/latest/administration/provisioning/

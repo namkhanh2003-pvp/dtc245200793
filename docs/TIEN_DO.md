@@ -1,38 +1,50 @@
 # Tiến độ đề 29 — Website công thức nấu ăn
 
-Cập nhật: 02/10/2026. Đối chiếu trang 1–2 và đề 29 ở trang 8 của file đề môn Triển khai và Quản trị Hệ thống Phần mềm. Trạng thái dựa trên lần chạy gần nhất người thực hiện đã xác nhận và bản mã nguồn chuẩn bị; không coi cấu hình chưa chạy trên máy Windows là hoàn tất.
+MSSV **dtc245200793**. Bài thực hành cá nhân.
+Repository: https://github.com/namkhanh2003-pvp/dtc245200793
 
-| Tiêu chí chấm điểm | Điểm | Tiến độ thực tế | Điều kiện để xác nhận hoàn thành |
+Đối chiếu yêu cầu và bảng chấm ở trang 1–2 của đề. Cập nhật ngày **03/10/2026, giờ Việt Nam**, sau khi kiểm tra ảnh Compose, Prometheus và toàn bộ dashboard Grafana trên máy Windows của sinh viên.
+
+| Tiêu chí | Điểm | Tiến độ có minh chứng | Còn cần làm |
 | --- | ---: | --- | --- |
-| GitHub, source và cấu hình đầy đủ, README, 3 commit có ý nghĩa | 1,5 | Đã khởi tạo Git cục bộ; chưa có GitHub và 3 commit. README đã chuẩn bị trong gói cập nhật. | Tài khoản/repo theo MSSV, đẩy mã nguồn, commit 1 Nginx, commit 2 giám sát, commit 3 log. |
-| Ứng dụng + Database + công cụ quản lý DB | 1,5 | Website và MySQL chạy được; giao diện mới và ảnh món đã hiển thị. phpMyAdmin từng chạy được, nhưng mất truy cập cổng 18081 sau đổi mạng; đã chuẩn bị bản sửa mạng admin. Bản sửa phông cần xác nhận lại trên Windows. | Xác nhận phpMyAdmin truy cập/đăng nhập lại và xem được dữ liệu; kiểm tra giao diện sau sửa phông. |
-| Nginx reverse proxy, HTTPS hoặc security headers | 1,5 | Đã có minh chứng trên Windows: `nginx -t` thành công, HTTP 200, `Server: nginx` và đủ bốn security headers. Chưa lưu commit 1 trên GitHub. | Giữ screenshot, tạo GitHub và commit 1. |
-| Prometheus + Grafana: container/web/DB | 1,5 | Chưa triển khai. | Metrics đủ ba lớp, targets hoạt động, dashboard Grafana và screenshot; commit 2. |
-| Loki + Promtail, ít nhất 2–3 query LogQL | 1,5 | Chưa triển khai. | Log tập trung có dữ liệu, chạy được 2–3 truy vấn, screenshot; commit 3. |
-| Ít nhất 3–4 biện pháp hardening | 1,5 | Đã kiểm chứng non-root web (`uid=33(www-data)`) và security headers. Có cấu hình mạng riêng, giới hạn cổng/quyền, mount chỉ đọc; độ mạnh mật khẩu và quyền DB cần kiểm chứng. | Chọn ít nhất 3–4 biện pháp, chạy kiểm tra và giải thích được từng biện pháp kèm minh chứng. |
-| Tổng thể và trình bày | 1,0 | Compose chạy được hệ thống cơ bản; chưa có toàn bộ giám sát/log, báo cáo và demo hoàn chỉnh. | Tất cả dịch vụ bằng Compose, báo cáo cá nhân ≥10 trang, bìa thông tin sinh viên, kiến trúc/cách hoạt động/kết quả 6 bước và demo đầy đủ. |
+| GitHub, toàn bộ source/config, README, ít nhất 3 commit có ý nghĩa | 1,5 | Repo Public theo MSSV; commit 1 **3284f30** đã push; cấu hình giám sát và tài liệu cập nhật đã chuẩn bị cho commit 2 | Tạo/push commit 2 và 3. Username **namkhanh2003-pvp** khác MSSV, chưa hoàn tất đối chiếu yêu cầu tên tài khoản |
+| Web + MySQL + phpMyAdmin | 1,5 | Website và dữ liệu hoạt động; phpMyAdmin đã khôi phục, đăng nhập recipe_user và xem recipe_db; db/web healthy | Giữ ảnh, kiểm tra lại sau bổ sung giám sát/log; xác nhận giao diện/phông trên Windows |
+| Nginx reverse proxy, HTTPS hoặc headers | 1,5 | nginx -t thành công, HTTP 200 qua Nginx, đủ 4 headers, Nginx healthy; đã lưu trong commit 1 | Giữ minh chứng và giải thích đường đi request |
+| Prometheus/Grafana: container/web/DB | 1,5 | Đã chạy trên Docker Desktop: 10 dịch vụ, 6 target bằng 1; Website/MySQL/Nginx UP; đủ biểu đồ CPU/RAM/mạng, request/kết nối Nginx, phản hồi web, kết nối/truy vấn MySQL | Giữ ảnh làm minh chứng báo cáo; tạo/push commit 2 |
+| Loki/Promtail và 2–3 query LogQL | 1,5 | Chưa triển khai | Log tập trung, chạy truy vấn và giữ kết quả; commit 3 |
+| Ít nhất 3–4 biện pháp hardening | 1,5 | Có minh chứng www-data và headers; Compose xác nhận các cổng host chỉ bind loopback, DB/exporter không published port; cấu hình mạng riêng, hạn chế capabilities và mount chỉ đọc | Giữ minh chứng mạng/quyền DB thực tế; giải thích ngoại lệ privileged của cAdvisor |
+| Tổng thể, báo cáo và demo | 1,0 | Web/DB/proxy/monitoring chạy được trong Compose; có source GitHub cho commit 1 | Báo cáo ≥10 trang, bìa thông tin sinh viên/đề tài, kiến trúc/cách hoạt động/kết quả 6 bước, ảnh và demo đủ hệ thống |
 
-Tổng điểm tiêu chí: 10. Chưa thể quy đổi tiến độ thành điểm dự kiến vì các phần đã cấu hình vẫn cần demo và được giảng viên đánh giá.
+Chưa quy đổi thành phần trăm hoặc điểm dự kiến; giảng viên chấm dựa trên kết quả chạy và demo.
 
-## Việc nên làm ngay
+## Việc đang làm
 
-1. Áp dụng `bep-nha-sua-phpmyadmin.zip` và tạo lại riêng phpMyAdmin theo `docs/SUA_PHPMYADMIN.md`.
-2. Xác nhận phpMyAdmin truy cập và đăng nhập DB thành công; kiểm tra giao diện sau sửa phông.
-3. Giữ ảnh minh chứng Nginx/headers/non-root đã thành công.
-4. Tạo GitHub/commit 1 theo mã số sinh viên, trước khi chuyển sang Prometheus/Grafana.
+1. Chép tài liệu cập nhật sau kiểm chứng vào dự án.
+2. Kiểm tra danh sách file Git, bảo đảm `.env` không được theo dõi.
+3. Tạo và push commit 2 theo docs/BUOC_2_GIAM_SAT.md.
+4. Chuyển sang Loki/Promtail, kiểm chứng LogQL và commit 3.
+5. Hoàn thiện minh chứng hardening, báo cáo và demo.
 
-## Chức năng website đã có và chưa có
+Không coi target cAdvisor UP là đủ nếu không có số liệu CPU/RAM theo nhãn service. Không coi dashboard trống là hoàn thành.
 
-Có: xem danh sách món, tìm kiếm, lọc danh mục, chi tiết nguyên liệu/bước chế biến, giao diện responsive. Chưa có trang quản trị đăng/sửa/xóa công thức và tài khoản người đăng. Đề 29 mô tả website chia sẻ công thức nhưng không liệt kê CRUD/đăng nhập bắt buộc; có thể bổ sung phần quản trị sau khi các yêu cầu triển khai cốt lõi hoạt động hoặc khi giảng viên yêu cầu.
+## Kết quả giám sát đã đối chiếu
+
+- Script thiết lập hoàn tất; 10 container đang chạy.
+- Truy vấn Prometheus `up` có 6 dòng, tất cả bằng 1.
+- Grafana hiển thị 10 container, ba trạng thái Website/MySQL/Nginx UP và biểu đồ CPU/RAM theo service.
+- Biểu đồ web có request Nginx và thời gian phản hồi trang chủ; biểu đồ DB có kết nối và tốc độ truy vấn MySQL; có mạng nhận theo container và kết nối hoạt động Nginx.
+- Ảnh kiểm tra dashboard: `image(20261002-180446).png`, `image(20261002-180455).png`, `image(20261002-180500).png`. Đây là tên ảnh đã đối chiếu, chưa phải các tệp được thêm vào repository.
+
+Các số liệu phản ánh hệ thống đang chạy cùng lưu lượng giám sát nền, chưa phải kết quả kiểm thử tải. Chưa xác nhận commit 2 đã tạo/push.
 
 ## Minh chứng cần giữ
 
-- Website trang chủ, kết quả tìm kiếm và chi tiết món.
-- phpMyAdmin hiển thị DB/bảng/dữ liệu.
-- Compose services, Nginx config test và response headers.
-- Prometheus targets và Grafana dashboard.
+- Website trang chủ, tìm kiếm/lọc và chi tiết món.
+- phpMyAdmin có DB/bảng/dữ liệu.
+- Compose, nginx -t, headers, web id.
+- Prometheus targets và dashboard có đủ container/web/DB.
 - Log tập trung và 2–3 kết quả LogQL.
-- Non-root, mạng Docker, quyền DB và các biện pháp hardening đã chọn.
-- GitHub source, README và lịch sử 3 commit theo đề.
+- Mạng Docker, quyền DB và ít nhất 3–4 biện pháp hardening.
+- GitHub, README và lịch sử 3 commit có nội dung tương ứng.
 
-Không đưa mật khẩu thật vào báo cáo, ảnh minh chứng hay GitHub.
+Không đưa mật khẩu vào GitHub, báo cáo hoặc ảnh minh chứng.
