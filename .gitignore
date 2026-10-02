@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.log
+*.zip
+node_modules/
+bep-nha-update/
+Thumbs.db
+.DS_Store
+/app/style .css
