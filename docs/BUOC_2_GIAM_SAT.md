@@ -201,7 +201,7 @@ Môi trường chuẩn bị **không có Docker Engine/MySQL đang chạy**; ki�
 - Grafana hiển thị Website/MySQL/Nginx UP, 10 container và dữ liệu CPU/RAM/mạng theo service.
 - Các biểu đồ request/kết nối Nginx, thời gian phản hồi web, kết nối/tốc độ truy vấn MySQL đều có dữ liệu.
 
-Đã đủ dữ liệu để tạo commit 2 theo bước 6. Chưa xác nhận commit 2 đã được tạo/push. Giữ ảnh cho báo cáo; số liệu hiện tại gồm lưu lượng giám sát nền, không phải phép kiểm thử tải.
+Commit 2 **3d76553** đã được tạo/push; ảnh ngày 03/10/2026 xác nhận HEAD/main và origin/main cùng ở commit này. Giữ ảnh cho báo cáo; số liệu hiện tại gồm lưu lượng giám sát nền, không phải phép kiểm thử tải. Bước tiếp theo là logging trong docs/BUOC_3_LOG.md.
 
 ## Tài liệu chính thức
 

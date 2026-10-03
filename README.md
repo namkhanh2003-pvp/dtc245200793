@@ -4,7 +4,7 @@ Bài thực hành **cá nhân** môn Triển khai và Quản trị Hệ thống 
 MSSV: **dtc245200793**.
 Repository: https://github.com/namkhanh2003-pvp/dtc245200793
 
-Website PHP 8.4/Apache lưu công thức, nguyên liệu và danh mục trong MySQL 8.4; phpMyAdmin quản lý DB. Nginx làm reverse proxy có security headers. Prometheus/Grafana, các exporter và dashboard đã chạy trên Docker Desktop của sinh viên, có dữ liệu giám sát container/web/MySQL. Loki/Promtail và báo cáo chưa hoàn thành.
+Website PHP 8.4/Apache lưu công thức, nguyên liệu và danh mục trong MySQL 8.4; phpMyAdmin quản lý DB. Nginx làm reverse proxy có security headers. Prometheus/Grafana, các exporter và dashboard đã chạy trên Docker Desktop của sinh viên, có dữ liệu giám sát container/web/MySQL. Loki/Promtail đã nhận log thật trên Windows; Grafana hiển thị log tập trung và ba truy vấn LogQL đã chạy thành công. Phần logging đang chuẩn bị lưu bằng commit 3; báo cáo chưa hoàn thành.
 
 ## Chức năng
 
@@ -25,6 +25,8 @@ Nội dung được quản lý bằng SQL/phpMyAdmin; chưa có tài khoản ng�
 | Prometheus targets | http://localhost:18082/targets |
 | Grafana | http://localhost:18083 |
 | Dashboard | http://localhost:18083/d/bep-nha-monitoring/ |
+| Dashboard log | http://localhost:18083/d/bep-nha-logs/ |
+| Loki readiness | http://localhost:18084/ready |
 | MySQL và các exporter | Chỉ qua mạng Docker, không công bố cổng host |
 
 Các published ports bind `127.0.0.1`. Grafana username là `admin`; mật khẩu được script thiết lập tạo và lưu tại `.env` trên máy thực hiện. phpMyAdmin dùng `recipe_user` và `MYSQL_PASSWORD`.
@@ -37,12 +39,14 @@ Các published ports bind `127.0.0.1`. Grafana username là `admin`; mật khẩ
 | database/ | Schema và seed |
 | nginx/default.conf | Reverse proxy, headers, listener stub_status nội bộ |
 | docker-compose.yml | MySQL, phpMyAdmin, web, Nginx |
-| docker-compose.override.yml | Thêm 6 dịch vụ giám sát và mạng monitoring |
+| docker-compose.override.yml | Thêm 6 dịch vụ giám sát, Loki/Promtail và mạng monitoring |
 | monitoring/setup.ps1 | Tạo mật khẩu và tài khoản MySQL giám sát |
 | monitoring/prometheus.yml | Scrape targets, lọc container theo project |
 | monitoring/blackbox.yml | Probe HTTP/nội dung trang chủ |
 | monitoring/grafana/ | Datasource và dashboard được provision |
+| logging/ | Cấu hình Loki và Promtail, không chứa dữ liệu log |
 | docs/BUOC_2_GIAM_SAT.md | Các bước Windows và điều kiện kiểm chứng commit 2 |
+| docs/BUOC_3_LOG.md | Cách chạy logging, ba LogQL query và điều kiện commit 3 |
 | docs/TIEN_DO.md | Đối chiếu tiến độ với tiêu chí đề |
 | .env.example | Mẫu môi trường trống, không chứa mật khẩu |
 
@@ -50,20 +54,21 @@ Compose tự đọc file cơ bản và override. Có thể dùng `-f docker-comp
 
 ## Cập nhật máy Windows hiện tại
 
-Website, MySQL, phpMyAdmin và Nginx đang chạy trong `C:\Users\basiu\recipe-website`.
-Giải nén `bep-nha-giam-sat.zip`, chép **các mục bên trong** vào thư mục này và thay thế tệp trùng tên. Giữ nguyên `.env` và volume MySQL.
+Web/DB/proxy và sáu dịch vụ giám sát đang chạy trong `C:\Users\basiu\recipe-website`.
+Giải nén `bep-nha-log-tap-trung.zip`, chép **các mục bên trong** vào thư mục này và thay thế tệp trùng tên. Giữ nguyên `.env` và các volume hiện có.
 
 Tại CMD, chạy từng lệnh:
 
 ```bat
 cd /d C:\Users\basiu\recipe-website
-powershell -NoProfile -ExecutionPolicy Bypass -File .\monitoring\setup.ps1
 docker compose config --quiet
 docker compose up -d
+docker compose restart grafana
 docker compose ps
+curl.exe http://localhost:18084/ready
 ```
 
-Chỉ chạy lệnh tiếp khi lệnh trước thành công. Script dùng root bên trong DB để tạo tài khoản giám sát, không in mật khẩu. Mỗi mật khẩu mới được sinh từ 32 byte ngẫu nhiên và lưu dưới dạng 64 ký tự hexadecimal. Chạy lại dùng cùng mật khẩu đã tạo; không đổi hai mật khẩu MySQL cũ và không nhập lại seed.
+Chỉ chạy lệnh tiếp khi lệnh trước thành công. Khởi động lại Grafana để đọc datasource Loki; có 12 dịch vụ sau cập nhật. Loki cần khoảng 20–30 giây để ready. Thực hiện tạo log demo và truy vấn theo [docs/BUOC_3_LOG.md](docs/BUOC_3_LOG.md).
 
 ## Cài từ GitHub trên máy mới
 
@@ -123,8 +128,11 @@ Nếu lỗi, dùng `docker compose ps` và `docker compose logs --tail=60 TEN_DI
 - Tài khoản giám sát DB có quyền đọc/process/replication-client, không ghi/DDL và tối đa 3 kết nối. Mật khẩu root chỉ dùng khi thiết lập.
 - Grafana tắt đăng ký và đăng nhập ẩn danh.
 - .env được loại khỏi Git và Docker build context.
+- Loki cấu hình chạy UID/GID 10001; Loki/Promtail có root filesystem chỉ đọc, drop ALL capabilities và no-new-privileges. Loki chỉ bind loopback; Promtail không published port.
 
 **Ngoại lệ cần giải thích:** cAdvisor chạy privileged để quan sát cgroups/Docker của Linux VM; mount chỉ đọc không biến Docker socket thành API chỉ đọc. Không tuyên bố mọi container đều non-root hoặc đều bị loại mọi quyền.
+
+Promtail chạy root và mount Docker socket để đọc log. Lọc project/service và mount socket `:ro` không hạn chế quyền của Docker API. Loki tắt auth/multi-tenancy cho mô hình local một người, không mở public. Promtail đã EOL theo tài liệu Grafana từ 02/03/2026; vẫn dùng trong bài vì đề yêu cầu Promtail, không coi đây là lựa chọn production mới.
 
 Đề cho phép HTTPS tự ký **hoặc** security headers cơ bản; website chọn headers. Các biện pháp cần có minh chứng thực tế trước khi ghi hoàn tất.
 
@@ -137,9 +145,13 @@ Commit 1 `3284f30` đã được đẩy lên main ngày 02/10/2026: website + Ng
 
 Cấu hình giám sát đã qua Docker Compose CLI và promtool 3.13.4 (cấu hình + 12 truy vấn dashboard). Script đã qua parser PowerShell và kiểm thử biệt lập bằng dữ liệu giả.
 
-Minh chứng trên máy Windows được đối chiếu ngày **03/10/2026, giờ Việt Nam**: script báo `Monitoring setup complete.`, Compose có 10 dịch vụ chạy và truy vấn `up` trả về 6 target bằng 1. Dashboard có Website/MySQL/Nginx UP, 10 container và các biểu đồ CPU, RAM, mạng, request/kết nối Nginx, thời gian phản hồi trang chủ, kết nối/tốc độ truy vấn MySQL. Đã đủ dữ liệu để tạo commit 2. Chưa đối chiếu `SHOW GRANTS` để chứng minh toàn bộ quyền tài khoản DB, và chưa xác nhận commit 2 đã được push.
+Minh chứng trên máy Windows được đối chiếu ngày **03/10/2026, giờ Việt Nam**: script báo `Monitoring setup complete.`, Compose có 10 dịch vụ chạy và truy vấn `up` trả về 6 target bằng 1. Dashboard có Website/MySQL/Nginx UP, 10 container và các biểu đồ CPU, RAM, mạng, request/kết nối Nginx, thời gian phản hồi trang chủ, kết nối/tốc độ truy vấn MySQL. Commit 2 **3d76553** đã push lên main; ảnh lịch sử Git xác nhận HEAD/main và origin/main ở commit này. Chưa đối chiếu `SHOW GRANTS` để chứng minh toàn bộ quyền tài khoản DB.
 
-Còn lại: tạo/push commit 2; Loki/Promtail và 2–3 LogQL query rồi commit 3; minh chứng hardening; báo cáo cá nhân tối thiểu 10 trang và demo. Tên tài khoản GitHub hiện tại là namkhanh2003-pvp, khác MSSV; yêu cầu đặt tên tài khoản theo MSSV vẫn cần đối chiếu với giảng viên.
+Cấu hình logging dùng Loki 3.7.8 và Promtail 3.6.11. Ngày **03/10/2026, giờ Việt Nam**, ảnh Windows xác nhận Compose có 12 dịch vụ chạy và Loki `/ready` trả `ready`. Dashboard log hiển thị log Nginx/web và request 404 được tạo có chủ đích. Trong Explore với datasource Loki: truy vấn log chung trả 958 dòng trong khoảng đang xem; truy vấn HTTP lỗi tìm được một request `__recipe_demo_missing__` có status 404 lúc 19:46:57; truy vấn đếm log hiển thị hai chuỗi `nginx`/`web` trong cửa sổ trượt 5 phút. Số dòng phụ thuộc khoảng thời gian và lưu lượng giám sát nền, không phải số người truy cập.
+
+Nhãn và truy vấn đã được kiểm chứng trên log thật của Nginx/web. Cấu hình thu cả DB/phpMyAdmin, nhưng chưa đối chiếu riêng ảnh log của hai dịch vụ này trên Windows; không suy diễn từ selector bốn dịch vụ rằng ảnh đã chứng minh cả bốn. Biểu đồ đếm đã được đối chiếu trong Explore; panel đếm trên dashboard log cần kiểm tra lại khi demo. Named volumes đã được cấu hình, chưa kiểm tra khôi phục log/vị trí đọc sau sự cố.
+
+Ảnh Git lúc 20:23 ngày 03/10/2026 xác nhận `.env` chưa được Git theo dõi, HEAD/main và origin/main vẫn ở commit 2 **3d76553**, các file logging đang chờ commit. Còn lại: tạo/push commit 3; bổ sung minh chứng hardening; kiểm tra toàn hệ thống, báo cáo cá nhân tối thiểu 10 trang và demo. Tên tài khoản GitHub hiện tại là namkhanh2003-pvp, khác MSSV; yêu cầu đặt tên tài khoản theo MSSV vẫn cần đối chiếu với giảng viên.
 
 ## Ảnh và phông
 
@@ -157,3 +169,4 @@ Noto Serif Regular/Italic được lấy nguyên tệp từ kho chính thức ht
 - MySQL exporter: https://github.com/prometheus/mysqld_exporter
 - cAdvisor: https://github.com/google/cadvisor
 - Grafana provisioning: https://grafana.com/docs/grafana/latest/administration/provisioning/
+- Loki/Promtail và LogQL: xem tài liệu chính thức trong [docs/BUOC_3_LOG.md](docs/BUOC_3_LOG.md).

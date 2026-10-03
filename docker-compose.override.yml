@@ -138,9 +138,59 @@ services:
       - ALL
     mem_limit: 64m
 
+  loki:
+    image: grafana/loki:3.7.8
+    restart: unless-stopped
+    user: "10001:10001"
+    command:
+      - -config.file=/etc/loki/recipe.yml
+    volumes:
+      - ./logging/loki.yml:/etc/loki/recipe.yml:ro
+      - loki_data:/loki
+    ports:
+      - "127.0.0.1:18084:3100"
+    networks:
+      - monitoring
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    mem_limit: 512m
+    # The official image is distroless: no shell/wget healthcheck is available.
+    # Verify /ready through localhost:18084 before checking Grafana queries.
+
+  promtail:
+    image: grafana/promtail:3.6.11
+    restart: unless-stopped
+    user: "0:0"
+    depends_on:
+      loki:
+        condition: service_started
+    command:
+      - -config.file=/etc/promtail/recipe.yml
+    volumes:
+      - ./logging/promtail.yml:/etc/promtail/recipe.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - promtail_positions:/positions
+    networks:
+      - monitoring
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    mem_limit: 256m
+
 volumes:
   prometheus_data:
   grafana_data:
+  loki_data:
+  promtail_positions:
 
 networks:
   monitoring:

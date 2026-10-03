@@ -1,0 +1,174 @@
+{
+  "id": null,
+  "uid": "bep-nha-logs",
+  "title": "Bếp Nhà — Nhật ký hệ thống",
+  "tags": [
+    "recipe-website",
+    "dtc245200793",
+    "loki"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": false,
+  "refresh": "15s",
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "text",
+      "title": "Đề 29 · Log tập trung",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 3
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "## Bếp Nhà — Nhật ký hệ thống\nMSSV: **dtc245200793** · Promtail → Loki → Grafana. Ba panel bên dưới dùng ba truy vấn LogQL trong `docs/BUOC_3_LOG.md`. Chọn Last 24 hours để tìm log khởi động DB/phpMyAdmin; chọn Last 15 minutes khi demo truy cập web. Log gồm cả healthcheck và probe giám sát."
+      }
+    },
+    {
+      "id": 2,
+      "type": "logs",
+      "title": "1. Log chung — Nginx · PHP/Apache · MySQL · phpMyAdmin",
+      "datasource": {
+        "type": "loki",
+        "uid": "recipe-loki"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 3,
+        "w": 24,
+        "h": 10
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "recipe-loki"
+          },
+          "expr": "{project=\"recipe-website\", service=~\"nginx|web|db|phpmyadmin\"}",
+          "queryType": "range",
+          "maxLines": 300
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showLabels": true,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "dedupStrategy": "none",
+        "sortOrder": "Descending"
+      },
+      "description": "Log thật của Docker. Lỗi HTTP 404 được tạo có chủ đích để minh họa truy vấn."
+    },
+    {
+      "id": 3,
+      "type": "logs",
+      "title": "2. Nginx — phản hồi HTTP 4xx/5xx",
+      "datasource": {
+        "type": "loki",
+        "uid": "recipe-loki"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 13,
+        "w": 24,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "recipe-loki"
+          },
+          "expr": "{project=\"recipe-website\", service=\"nginx\", stream=\"stdout\"} | pattern `<ip> - <user> [<time>] \"<method> <path> <protocol>\" <status> <bytes> <_>` | status >= 400 | __error__=\"\"",
+          "queryType": "range",
+          "maxLines": 300
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showLabels": true,
+        "showCommonLabels": false,
+        "wrapLogMessage": true,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "dedupStrategy": "none",
+        "sortOrder": "Descending"
+      },
+      "description": "Log thật của Docker. Lỗi HTTP 404 được tạo có chủ đích để minh họa truy vấn."
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "3. Số dòng log trong 5 phút, theo dịch vụ",
+      "datasource": {
+        "type": "loki",
+        "uid": "recipe-loki"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 21,
+        "w": 24,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "loki",
+            "uid": "recipe-loki"
+          },
+          "expr": "sum by (service) (count_over_time({project=\"recipe-website\", service=~\"nginx|web|db|phpmyadmin\"}[5m]))",
+          "queryType": "range",
+          "legendFormat": "{{service}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "decimals": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": false
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "description": "Cửa sổ trượt 5 phút. Bao gồm log giám sát nền; không phải số người truy cập. Dịch vụ không phát sinh log có thể không xuất hiện."
+    }
+  ],
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  }
+}
