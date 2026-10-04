@@ -1,0 +1,42 @@
+BẾP NHÀ — MỞ WEBSITE BẰNG MỘT LẦN BẤM ĐÚP
+
+Áp dụng cho dự án recipe-website đã thiết lập Docker và .env như các bước trước.
+Máy Windows cần có Docker Desktop và dùng Linux containers.
+
+1. Giải nén bep-nha-mo-web-mot-click.zip.
+2. Sao chép ba mục bên trong vào C:\Users\basiu\recipe-website:
+   - run_project.bat
+   - thư mục scripts (có start-project.ps1)
+   - HUONG_DAN_MO_WEB.txt
+   Nếu đã có thư mục scripts, gộp thư mục, giữ các file khác bên trong.
+3. Bấm đúp run_project.bat trong thư mục recipe-website.
+4. Đợi chương trình kiểm tra và khởi động. Nếu Docker Desktop chưa chạy,
+   chương trình sẽ thử tự mở và chờ tối đa 3 phút.
+5. Khi website trả HTTP 200 và có tiêu đề Bếp Nhà, chương trình mở trình duyệt
+   vào http://localhost:18080/index.php.
+
+Sau này, mỗi lần mở web chỉ cần bấm đúp run_project.bat.
+Bạn có thể nhấn chuột phải vào file này → Send to → Desktop (create shortcut)
+để tạo lối tắt ngoài màn hình. Windows 11 có thể cần Show more options trước.
+
+Website tiếp tục chạy khi đóng cửa sổ lệnh; giữ Docker Desktop đang chạy.
+Máy tắt/ngủ hoặc Docker Desktop dừng thì website có thể tạm ngừng truy cập.
+Grafana có thể cần thêm thời gian nạp dữ liệu sau khi khởi động.
+
+Gói này chỉ thêm chương trình khởi động, không kèm mã nguồn website đầy đủ.
+Chương trình dùng lại project Docker recipe-website và các volume hiện có.
+Không thay đổi .env, mật khẩu, dữ liệu MySQL hay cấu hình giám sát/logging.
+Không chạy lại bước setup.ps1 hoặc lệnh xóa volume.
+Với một máy mới, cần thiết lập dự án theo README.md trước khi dùng nút chạy.
+
+NẾU KHÔNG MỞ ĐƯỢC
+- Giữ cửa sổ lệnh để đọc thông báo lỗi, chụp ảnh gửi để kiểm tra.
+- Nếu thiếu scripts\start-project.ps1, hãy chép cả thư mục scripts cùng file BAT.
+- Nếu thiếu app/index.php hoặc Dockerfile, bạn đang đặt BAT sai thư mục.
+- Nếu Docker chưa sẵn sàng, mở Docker Desktop và đợi Engine running rồi thử lại.
+- Nếu Compose báo lỗi cấu hình hoặc trùng cổng, cần sửa lỗi đó trước khi mở web.
+- File BAT cần chạy bằng bấm đúp (Run/Open), không chọn Edit.
+
+Tài liệu tham khảo:
+https://docs.docker.com/reference/cli/docker/compose/up/
+https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_powershell_exe?view=powershell-5.1

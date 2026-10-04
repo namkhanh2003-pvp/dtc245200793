@@ -4,7 +4,7 @@ Bài thực hành **cá nhân** môn Triển khai và Quản trị Hệ thống 
 MSSV: **dtc245200793**.
 Repository: https://github.com/namkhanh2003-pvp/dtc245200793
 
-Website PHP 8.4/Apache lưu công thức, nguyên liệu và danh mục trong MySQL 8.4; phpMyAdmin quản lý DB. Nginx làm reverse proxy có security headers. Prometheus/Grafana, các exporter và dashboard đã chạy trên Docker Desktop của sinh viên, có dữ liệu giám sát container/web/MySQL. Loki/Promtail đã nhận log thật trên Windows; Grafana hiển thị log tập trung và ba truy vấn LogQL đã chạy thành công. Phần logging đang chuẩn bị lưu bằng commit 3; báo cáo chưa hoàn thành.
+Website PHP 8.4/Apache lưu công thức, nguyên liệu và danh mục trong MySQL 8.4; phpMyAdmin quản lý DB. Nginx làm reverse proxy có security headers. Prometheus/Grafana, các exporter và dashboard đã chạy trên Docker Desktop của sinh viên, có dữ liệu giám sát container/web/MySQL. Loki/Promtail đã nhận log thật trên Windows; Grafana hiển thị log tập trung và ba truy vấn LogQL đã chạy thành công. Phần logging đã push bằng commit 3 c2bf988. Đã kiểm tra giám sát, ba truy vấn log và Loki ready ngày 04/10/2026. Báo cáo chưa hoàn thành.
 
 ## Chức năng
 
@@ -145,13 +145,12 @@ Commit 1 `3284f30` đã được đẩy lên main ngày 02/10/2026: website + Ng
 
 Cấu hình giám sát đã qua Docker Compose CLI và promtool 3.13.4 (cấu hình + 12 truy vấn dashboard). Script đã qua parser PowerShell và kiểm thử biệt lập bằng dữ liệu giả.
 
-Minh chứng trên máy Windows được đối chiếu ngày **03/10/2026, giờ Việt Nam**: script báo `Monitoring setup complete.`, Compose có 10 dịch vụ chạy và truy vấn `up` trả về 6 target bằng 1. Dashboard có Website/MySQL/Nginx UP, 10 container và các biểu đồ CPU, RAM, mạng, request/kết nối Nginx, thời gian phản hồi trang chủ, kết nối/tốc độ truy vấn MySQL. Commit 2 **3d76553** đã push lên main; ảnh lịch sử Git xác nhận HEAD/main và origin/main ở commit này. Chưa đối chiếu `SHOW GRANTS` để chứng minh toàn bộ quyền tài khoản DB.
-
+Minh chứng trên máy Windows được đối chiếu ngày **03/10/2026, giờ Việt Nam**: script báo `Monitoring setup complete.`, Compose có 10 dịch vụ chạy và truy vấn `up` trả về 6 target bằng 1. Dashboard có Website/MySQL/Nginx UP, 10 container và các biểu đồ CPU, RAM, mạng, request/kết nối Nginx, thời gian phản hồi trang chủ, kết nối/tốc độ truy vấn MySQL. Commit 2 **3d76553** đã push lên main; ảnh lịch sử Git xác nhận HEAD/main và origin/main ở commit này. Đã đối chiếu SHOW GRANTS; xem kết quả cập nhật bên dưới.
 Cấu hình logging dùng Loki 3.7.8 và Promtail 3.6.11. Ngày **03/10/2026, giờ Việt Nam**, ảnh Windows xác nhận Compose có 12 dịch vụ chạy và Loki `/ready` trả `ready`. Dashboard log hiển thị log Nginx/web và request 404 được tạo có chủ đích. Trong Explore với datasource Loki: truy vấn log chung trả 958 dòng trong khoảng đang xem; truy vấn HTTP lỗi tìm được một request `__recipe_demo_missing__` có status 404 lúc 19:46:57; truy vấn đếm log hiển thị hai chuỗi `nginx`/`web` trong cửa sổ trượt 5 phút. Số dòng phụ thuộc khoảng thời gian và lưu lượng giám sát nền, không phải số người truy cập.
 
-Nhãn và truy vấn đã được kiểm chứng trên log thật của Nginx/web. Cấu hình thu cả DB/phpMyAdmin, nhưng chưa đối chiếu riêng ảnh log của hai dịch vụ này trên Windows; không suy diễn từ selector bốn dịch vụ rằng ảnh đã chứng minh cả bốn. Biểu đồ đếm đã được đối chiếu trong Explore; panel đếm trên dashboard log cần kiểm tra lại khi demo. Named volumes đã được cấu hình, chưa kiểm tra khôi phục log/vị trí đọc sau sự cố.
+Nhãn và truy vấn đã được kiểm chứng trên log thật của Nginx/web. Cấu hình thu cả DB/phpMyAdmin, nhưng chưa đối chiếu riêng ảnh log của hai dịch vụ này trên Windows; không suy diễn từ selector bốn dịch vụ rằng ảnh đã chứng minh cả bốn. Biểu đồ đếm đã được đối chiếu trong Explore; panel đếm trên dashboard log đã có dữ liệu khi kiểm tra ngày 04/10/2026. Named volumes đã được cấu hình, chưa kiểm tra khôi phục log/vị trí đọc sau sự cố.
 
-Ảnh Git lúc 20:23 ngày 03/10/2026 xác nhận `.env` chưa được Git theo dõi, HEAD/main và origin/main vẫn ở commit 2 **3d76553**, các file logging đang chờ commit. Còn lại: tạo/push commit 3; bổ sung minh chứng hardening; kiểm tra toàn hệ thống, báo cáo cá nhân tối thiểu 10 trang và demo. Tên tài khoản GitHub hiện tại là namkhanh2003-pvp, khác MSSV; yêu cầu đặt tên tài khoản theo MSSV vẫn cần đối chiếu với giảng viên.
+Commit 3 c2bf988 đã push lên main, gồm Loki/Promtail và ba truy vấn LogQL. Ngày 04/10/2026 đã kiểm tra lại: 12 dịch vụ chạy, dashboard giám sát có dữ liệu, dashboard log có log mới, request demo 404 và biểu đồ đếm log; Loki trả ready. Đã có minh chứng SHOW GRANTS cho tài khoản ứng dụng và giám sát MySQL. Còn hoàn thiện báo cáo cá nhân tối thiểu 10 trang, chuẩn bị demo và cập nhật tài liệu. Tên tài khoản GitHub namkhanh2003-pvp khác MSSV; cần đối chiếu yêu cầu này với giảng viên.
 
 ## Ảnh và phông
 
