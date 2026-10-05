@@ -1,0 +1,53 @@
+BẾP NHÀ — 40 MÓN, NGUYÊN LIỆU CHI TIẾT, IN / LƯU PDF
+
+Dùng cho dự án hiện đã có 30 món và ảnh như ảnh bạn gửi.
+
+BƯỚC 1 — CHÉP FILE
+1. Tải và giải nén bep-nha-40-mon-chi-tiet.zip vào thư mục riêng.
+2. Mở thư mục đã giải nén, chọn các mục BÊN TRONG:
+   app, database, docs, README.md, HUONG_DAN_40_MON.txt.
+3. Nhấn Ctrl + C.
+4. Mở C:\Users\basiu\recipe-website và nhấn Ctrl + V.
+5. Chọn Replace the files in the destination khi được hỏi;
+   gộp thư mục vào thư mục có sẵn.
+
+BƯỚC 2 — NHẬP NỘI DUNG VÀ MÓN MỚI
+Đây là bước cần làm. Chỉ chép file sẽ chưa đổi dữ liệu trong MySQL.
+1. Mở http://localhost:18081 và đăng nhập như lần trước nếu cần.
+2. Chọn recipe_db ở cột trái.
+3. Có thể dùng Export / Xuất > Quick / Nhanh > SQL > Go để giữ
+   một bản dữ liệu trước khi cập nhật.
+4. Chọn tab Import / Nhập > Choose File / Chọn tệp.
+5. Chọn đúng tệp:
+   C:\Users\basiu\recipe-website\database\04_detailed_recipes.sql
+6. Để định dạng SQL và mã ký tự UTF-8, kéo xuống cuối trang.
+7. Bấm Import / Go / Thực hiện (tùy ngôn ngữ phpMyAdmin).
+8. Đợi thông báo nhập thành công. Nếu xuất hiện lỗi, giữ lại ảnh lỗi;
+   không xóa database hoặc volume để thử lại.
+
+Chỉ nhập 04 trong lần này; không cần nhập lại 01, 02, 03.
+04 giữ ID món cũ, cập nhật chi tiết 30 món mẫu và thêm 10 món.
+Nhập lại 04 không tạo thêm món trùng; món riêng ngoài bộ mẫu vẫn giữ.
+
+BƯỚC 3 — KIỂM TRA WEBSITE
+1. Mở http://localhost:18080/index.php > Ctrl + F5.
+2. Trang chủ phải có 40 công thức; danh sách có 4 trang.
+3. Tìm Sữa chua trái cây: thấy lượng xoài 200 g, chuối 100 g,
+   chú thích sơ chế và 6 bước có tiêu đề.
+4. Tìm một món mới như Gà xào sả ớt hoặc Bánh pancake chuối:
+   phải có ảnh, nguyên liệu, bước nấu và mẹo.
+
+BƯỚC 4 — IN HOẶC LƯU PDF
+1. Mở chi tiết một món, bấm In công thức / Lưu PDF.
+2. Trang bản in mở trên cùng tab và gọi hộp thoại in.
+3. Nếu chưa thấy hộp thoại, bấm Mở hộp thoại in / Lưu PDF
+   trên đầu trang hoặc nhấn Ctrl + P.
+4. In giấy: chọn máy in đã có, rồi bấm Print / In.
+5. Lưu PDF: chọn Save as PDF / Lưu dưới dạng PDF, bấm Save / Lưu
+   rồi chọn nơi lưu. Không cần máy in để lưu PDF.
+6. Nhấn Quay lại công thức để trở về website.
+
+Web đang mount trực tiếp app: không cần build lại Docker.
+Nguồn và prompt ảnh AI: docs\ANH_10_MON_MOI.md.
+Danh sách kiểm chứng: docs\KIEM_TRA_40_MON.md.
+Sau khi kiểm tra trên Windows, mới chụp minh chứng và lưu GitHub.

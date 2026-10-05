@@ -1,0 +1,63 @@
+BẾP NHÀ — 100 MÓN VÀ NỀN CĂN BẾP
+
+Bản này cập nhật tiếp từ web 60 món bạn đang chạy.
+Bạn không cần làm lại dự án. Có 40 món mới, mỗi món có ảnh và công thức riêng.
+
+BƯỚC 1 — CHÉP FILE VÀO DỰ ÁN
+1. Tải bep-nha-100-mon-nen-can-bep.zip, bấm chuột phải > Extract All /
+   Giải nén tất cả > Extract. Mở thư mục vừa giải nén.
+2. Mở đến khi thấy app, database, docs, README.md, HUONG_DAN_100_MON.txt.
+   Nhấn Ctrl + A rồi Ctrl + C để sao chép các mục BÊN TRONG.
+3. Mở C:\Users\basiu\recipe-website rồi nhấn Ctrl + V.
+4. Khi Windows hỏi tệp trùng, chọn Replace the files in the destination /
+   Thay thế tệp ở thư mục đích. Thư mục app mới gộp vào app hiện có.
+5. Kiểm tra có:
+   recipe-website\app\assets\backgrounds\kitchen.jpg
+   recipe-website\database\06_hundred_recipes.sql
+   Không tạo thêm một lớp recipe-website\app\app.
+
+Gói có đủ ảnh của 100 món, phông và thư viện tải PDF.
+Chép vào dự án đang có, giữ nguyên db.php, .env và các tệp Docker hiện tại.
+
+BƯỚC 2 — NHẬP 40 MÓN MỚI VÀO DATABASE
+1. Mở trình duyệt, vào http://localhost:18081.
+2. Bấm recipe_db ở cột bên trái.
+3. Bấm Import / Nhập trên thanh phía trên.
+4. Bấm Choose File / Chọn tệp, chọn đúng:
+   C:\Users\basiu\recipe-website\database\06_hundred_recipes.sql
+5. Giữ định dạng SQL và UTF-8, kéo xuống cuối trang.
+6. Bấm Import / Go / Thực hiện, đợi thông báo nhập thành công.
+
+LẦN NÀY CHỈ NHẬP 06_hundred_recipes.sql.
+Chép ảnh và code thôi thì web vẫn còn 60 món vì database chưa được bổ sung.
+06 thêm 40 món; giữ ID và nội dung 60 món cũ. Có sửa tên nguyên liệu cơm mẻ
+ở hai món để không nhầm với me chua. Nhập lại 06 không tạo món mẫu trùng.
+Không xóa database hoặc volume. Không chạy lại các SQL 01–05 trong bước này.
+
+BƯỚC 3 — MỞ WEB VÀ KIỂM TRA
+1. Vào http://localhost:18080/index.php, nhấn Ctrl + F5.
+2. Chọn Tất cả danh mục, Mọi thời gian, xóa ô tìm kiếm, bấm Tìm công thức.
+   Trang có 100 công thức và 9 trang nếu trước đó chỉ có 60 món mẫu.
+3. Phóng to cửa sổ trình duyệt: thấy căn bếp ở cả bên trái và bên phải,
+   phần chữ ở giữa vẫn có nền sáng. Trên điện thoại, nền vẫn hiện ở viền
+   và nội dung tự thu gọn, không cần kéo ngang.
+4. Tìm “bánh flan”, mở Bánh flan hấp: có ảnh, định lượng, ghi chú,
+   6 bước và 2 mẹo. Chú ý flan cần làm lạnh thêm 4 giờ.
+5. Thử “bánh cuốn”, “xôi gấc”, “bò lúc lắc”, “cà ri rau củ”.
+6. Chọn Đúng 60 phút > Tìm công thức: mọi kết quả đều ghi 60 phút.
+   Thời gian là ước tính đã lưu, một số món có ghi thời gian ngâm/làm lạnh
+   bổ sung ngay trong trang chi tiết.
+7. Mở một món > Tải PDF. Nếu không hỏi nơi lưu, nhấn Ctrl + J,
+   chọn biểu tượng thư mục để mở vị trí tải xuống, rồi mở file PDF.
+8. Muốn in giấy: In công thức > Mở hộp thoại in hoặc Ctrl + P.
+   Nền căn bếp được ẩn trong bản in để không che chữ.
+
+Nếu nền chưa hiện: kiểm tra đường dẫn kitchen.jpg ở Bước 1 và Ctrl + F5.
+Nếu tổng vẫn 60: làm lại Bước 2 với đúng file 06, xem thông báo nhập SQL.
+Web đang dùng trực tiếp thư mục app, không cần build lại Docker cho gói này.
+
+ẢNH CHO BÁO CÁO
+Chụp trang chủ có tổng 100 món và nền bếp hai bên; một món mới với nguyên
+liệu và các bước; bộ lọc Đúng 60 phút; PDF đã tải và mở trên máy của bạn.
+Ảnh món và căn bếp là ảnh minh họa AI. Công thức là phiên bản gia đình,
+chưa được nấu thử. Chi tiết kiểm tra ở docs\KIEM_TRA_100_MON.md.

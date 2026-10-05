@@ -1,0 +1,65 @@
+BẾP NHÀ — NÂNG CẤP KHO CÔNG THỨC VÀ GIAO DIỆN
+
+Dành cho dự án đang chạy tại C:\Users\basiu\recipe-website.
+Gói cập nhật có app/, database/03_expand_recipes.sql và README.md.
+Có 27 công thức mới; nếu trước đó có 3 món mẫu thì sau nhập có 30 món.
+Các hình mới là hình vẽ minh họa SVG, không phải ảnh chụp món ăn.
+
+1. SAO LƯU TRƯỚC KHI CHÉP
+- Sao chép thư mục app hiện tại vào một thư mục sao lưu ngoài recipe-website.
+- Giữ thêm bản README.md hiện tại ở thư mục sao lưu.
+- Mở http://localhost:18081, đăng nhập bằng tài khoản đang dùng.
+- Chọn recipe_db bên trái → Export/Xuất → Quick/Nhanh → SQL → Go/Thực hiện.
+- Giữ file SQL tải về để dự phòng. Không gửi mật khẩu hoặc .env.
+
+2. CHÉP BẢN CẬP NHẬT
+- Giải nén bep-nha-nang-cap.zip vào một thư mục riêng.
+- Sao chép app, database, README.md và HUONG_DAN_NANG_CAP.txt vào C:\Users\basiu\recipe-website.
+- Chọn thay thế các tệp trùng tên và gộp thư mục database.
+- Giữ các tệp khác đã có trong database. File style .css cũ (có dấu cách)
+  nếu còn tồn tại không được website dùng; không cần sửa file đó.
+
+3. NHẬP CÔNG THỨC MỚI VÀO DATABASE ĐANG CÓ
+- Mở phpMyAdmin → chọn recipe_db → Import/Nhập.
+- Chọn file database\03_expand_recipes.sql từ gói vừa giải nén.
+- Giữ định dạng SQL, bộ mã utf-8 → Go/Thực hiện.
+- Đợi thông báo nhập thành công. Nếu có lỗi, dừng và gửi ảnh thông báo.
+- Chỉ nhập file 03_expand_recipes.sql ở bước này; không nhập lại schema/seed.
+- Nếu đã có món khác ngoài ba món mẫu, tổng số có thể lớn hơn 30.
+- Có thể nhập lại file 03: dữ liệu mẫu có kiểm tra trùng theo tên.
+- Chỉ chép SQL rồi khởi động lại Docker không tự nhập vào volume cũ.
+- KHÔNG dùng docker compose down -v hoặc xóa volume MySQL.
+
+4. XEM VÀ KIỂM TRA
+- Mở http://localhost:18080/index.php và nhấn Ctrl + F5.
+- app được mount trực tiếp nên thông thường không cần build lại Docker.
+- Kiểm tra số công thức/danh mục; thử tìm "gà", chọn Món chay,
+  lọc Trong 15 phút, sắp xếp Nhanh nhất và chuyển trang 2/3.
+- Bấm Chọn món ngẫu nhiên rồi mở công thức được gợi ý.
+- Mở một món mới để xem nguyên liệu và hướng dẫn.
+- Tích nguyên liệu/bước đã làm; trạng thái chỉ ở lần mở trang đó.
+- Thử In công thức; dùng Ctrl + P hoặc nút In công thức.
+- Kiểm tra lại dashboard giám sát/log khi truy cập trang để tạo lưu lượng.
+- Sau khi chạy đúng, chụp lại giao diện và phpMyAdmin làm minh chứng mới.
+
+5. LƯU LÊN GITHUB SAU KHI XÁC NHẬN
+Trong CMD ở thư mục recipe-website chạy từng lệnh:
+git diff --check
+git add app database/03_expand_recipes.sql README.md HUONG_DAN_NANG_CAP.txt
+git diff --cached --stat
+git commit -m "Expand recipe collection and refresh cooking experience"
+git push origin main
+Lệnh git add ở trên giả định bạn đã chép cả hướng dẫn này vào dự án.
+Không dùng git add . nếu có file sao lưu SQL trong dự án.
+
+PHẠM VI
+Không đổi .env, mật khẩu, Docker Compose, Nginx, giám sát hoặc logging.
+Công thức mới có định lượng và hướng dẫn cho khẩu phần ghi trên trang.
+Thời gian chè đậu xanh chưa tính thời gian ngâm, đã ghi trong hướng dẫn.
+
+KIỂM TRA ĐÃ THỰC HIỆN TRƯỚC KHI ĐÓNG GÓI
+- PHP 8.4 WASM: cú pháp và chức năng trang.
+- SQLite fixture: nhập 27 món bổ sung hai lần vẫn có 30 món, 167 liên kết.
+- Chromium: màn hình 1440px/390px, chức năng gợi ý và đánh dấu.
+- Chưa chạy gói này trên MySQL/Docker Windows của bạn; bước 3/4 là
+  bước xác nhận thực tế sau khi áp dụng.

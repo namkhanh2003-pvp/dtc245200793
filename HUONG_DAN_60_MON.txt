@@ -1,0 +1,74 @@
+BẾP NHÀ — 60 MÓN, LỌC ĐÚNG THỜI GIAN, TẢI PDF TRỰC TIẾP
+
+Dùng cho dự án của bạn đã nhập bản 40 món (04_detailed_recipes.sql).
+
+BƯỚC 1 — CHÉP BẢN CẬP NHẬT
+1. Tải bep-nha-60-mon-loc-thoi-gian-tai-pdf.zip và giải nén vào thư mục riêng.
+2. Mở thư mục đã giải nén, chọn các mục BÊN TRONG:
+   app, database, docs, README.md, HUONG_DAN_60_MON.txt.
+3. Nhấn Ctrl + C.
+4. Mở C:\Users\basiu\recipe-website và nhấn Ctrl + V.
+5. Chọn Replace the files in the destination / Thay thế tệp trùng tên.
+   app phải gộp vào app hiện có; không tạo recipe-website\app\app.
+6. Giữ cả thư mục app\lib và app\assets\fonts của gói mới:
+   nút Tải PDF cần những tệp này, không chỉ riêng download.php.
+
+BƯỚC 2 — THÊM 20 MÓN VÀ CÔNG THỨC VÀO MYSQL
+Chép file chưa làm tăng số món trong database. Cần nhập SQL dưới đây.
+1. Mở http://localhost:18081.
+2. Chọn recipe_db ở cột trái.
+3. Nếu muốn giữ một bản trước khi nâng cấp: Export / Xuất > Quick / Nhanh
+   > SQL > Go / Thực hiện để tải bản sao dữ liệu hiện tại.
+4. Chọn Import / Nhập > Choose File / Chọn tệp.
+5. Chọn:
+   C:\Users\basiu\recipe-website\database\05_more_recipes.sql
+6. Giữ định dạng SQL, mã ký tự UTF-8, kéo xuống cuối trang.
+7. Bấm Import / Go / Thực hiện và đợi thông báo thành công.
+
+Lần này chỉ nhập 05. Không cần nhập lại 01, 02, 03, 04.
+05 giữ nguyên ID, nội dung và nguyên liệu của 40 món đã có, thêm 20 món.
+Nhập lại 05 không nhân đôi món mẫu. Món riêng ngoài bộ mẫu được giữ.
+Không xóa database hoặc volume để cập nhật.
+
+BƯỚC 3 — THỬ BỘ LỌC THỜI GIAN
+1. Mở http://localhost:18080/index.php rồi nhấn Ctrl + F5.
+2. Xóa từ khóa; chọn Mọi danh mục và Mọi thời gian > Tìm công thức.
+   Tổng phải là 60 công thức nếu trước đó có đúng 40 món mẫu; có 5 trang.
+3. Chọn 46–60 phút > Tìm công thức:
+   kết quả chỉ có thời gian từ 46 đến 60 phút, không có món 20 phút.
+4. Chọn Đúng 60 phút > Tìm công thức:
+   mọi kết quả ghi 60 phút, ví dụ Cá kho tộ, Canh sườn hầm củ sen,
+   Cơm tấm sườn áp chảo, Nem rán, Chè khoai dẻo.
+5. Chọn Canh + Đúng 60 phút > Tìm công thức:
+   thấy Canh sườn hầm củ sen, không thấy canh 20/25/30 phút.
+6. Có thể chọn các khoảng khác hoặc Đúng 15/30/45/90 phút.
+   Bộ lọc theo thời gian đã lưu trong công thức; thời gian nấu thực tế là ước tính.
+
+BƯỚC 4 — TẢI FILE PDF
+1. Mở chi tiết một món bất kỳ, ví dụ Đậu hũ kho nấm.
+2. Bấm Tải PDF (nút màu nâu bên cạnh In công thức).
+3. Trình duyệt tải file cong-thuc-ID.pdf trực tiếp.
+   Nếu hỏi nơi lưu: chọn Desktop / Màn hình nền > Save / Lưu.
+   Nếu không hỏi: nhấn Ctrl + J để mở danh sách tải xuống,
+   chọn biểu tượng thư mục / Show in folder để tìm file.
+4. Mở file vừa tải: phải thấy tên món, lượng nguyên liệu, ghi chú,
+   tất cả các bước và mẹo bằng tiếng Việt.
+5. Muốn in ra giấy: bấm In công thức > Mở hộp thoại in
+   (hoặc Ctrl + P), chọn máy in và bấm Print / In.
+   Trang bản in cũng có nút Tải PDF riêng.
+
+Nút Tải PDF không cần hộp thoại in, JavaScript hoặc máy in.
+Nếu trang vẫn chỉ có nút cũ: kiểm tra bạn đã chép đúng thư mục app,
+chọn Replace tệp trùng và nhấn Ctrl + F5.
+Nếu báo chưa tạo được PDF: kiểm tra app\lib, app\assets\fonts và download.php
+đã chép đủ từ gói mới. Giữ ảnh thông báo để đối chiếu, không xóa dữ liệu.
+Web đang mount trực tiếp app nên không cần build lại Docker cho bản này.
+
+BƯỚC 5 — THỬ MÓN MỚI VÀ CHỤP MINH CHỨNG
+Tìm “thịt chó” hoặc “mắm tôm”, mở chi tiết để thấy ảnh, nguyên liệu và bước nấu.
+Các món mới có công thức gia đình và ảnh minh họa AI; chưa được nấu thử.
+Chụp: trang tổng 60 món; lọc Đúng 60 phút; chi tiết món mới;
+file PDF đã tải và mở được. Đây là ảnh trên máy bạn để dùng trong báo cáo.
+
+Tài liệu: docs\KIEM_TRA_60_MON.md; docs\ANH_20_MON_MOI.md;
+docs\THU_VIEN_PDF.md. README.md cập nhật mô tả tính năng.

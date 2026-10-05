@@ -12,9 +12,47 @@ Website PHP 8.4/Apache lưu công thức, nguyên liệu và danh mục trong My
 - Chi tiết thời gian, khẩu phần, nguyên liệu và các bước nấu; gợi ý món liên quan.
 - Đánh dấu nguyên liệu đã chuẩn bị trong lần mở trang, không lưu trạng thái vào DB.
 - Giao diện máy tính/điện thoại, ảnh món và phông tiếng Việt lưu cục bộ.
-- Dữ liệu mẫu: trứng chiên hành lá, canh rau ngót thịt băm, cơm chiên trứng cà rốt.
+- Kho mẫu sau nhập đến `06_hundred_recipes.sql`: 100 công thức, 8 danh mục, 964 liên kết món–nguyên liệu; các tên nguyên liệu cũ được giữ.
+- Lọc theo 6 khoảng thời gian không chồng nhau và đúng 15/30/45/60/90 phút, sắp xếp mới nhất/nhanh nhất/tên món; phân trang 12 món.
+- Gợi ý món ngẫu nhiên, đánh dấu bước đã nấu và mở bản in và tải PDF trực tiếp qua máy chủ. Bản in có đủ lượng nguyên liệu, ghi chú sơ chế, các bước và mẹo nấu.
+- 97 món bổ sung dùng ảnh minh họa AI dạng ảnh chụp, lưu JPEG cục bộ; giữ ba ảnh ban đầu. Tất cả 100 món mẫu có ảnh. Có nền ảnh căn bếp lớn phủ màn hình, hiện ở hai bên phần nội dung. Prompt: `docs/ANH_MON_AN.md`, `docs/ANH_10_MON_MOI.md`, `docs/ANH_20_MON_MOI.md`, `docs/ANH_40_MON_MOI.md`.
+- 626 bước có tiêu đề: sơ chế, ướp, mức lửa, thời gian và nhận biết kết quả; nguyên liệu có định lượng, đơn vị và ghi chú; 2 mẹo riêng cho mỗi món.
 
 Nội dung được quản lý bằng SQL/phpMyAdmin; chưa có tài khoản người đăng hoặc CRUD trên website. Đề 29 không liệt kê CRUD/đăng nhập bắt buộc; bổ sung khi cần mở rộng hoặc giảng viên yêu cầu.
+
+## Cập nhật hiện tại: 100 món và nền căn bếp
+
+Dùng tiếp từ bản 60 món. Xem **HUONG_DAN_100_MON.txt**: chép các mục bên trong gói vào `C:\Users\basiu\recipe-website`, nhập **riêng `database/06_hundred_recipes.sql`** trong phpMyAdmin rồi Ctrl + F5. Chép file không tự nhập dữ liệu. Không cần làm lại dự án hoặc build lại Docker cho thay đổi app này.
+
+Bản 06 thêm 40 món, 374 mục nguyên liệu, 240 bước và 40 ảnh riêng. Tổng bộ mẫu là 100 món, 626 bước, 964 mục nguyên liệu, 100 hàng recipe_details và 8 danh mục. Có bò lúc lắc, gà hấp hành, cá hấp gừng, canh khổ qua, các món chay, xôi gấc, bánh cuốn chảo, bánh xèo, bánh flan, sữa bắp… Mỗi món mới có 6 giai đoạn, định lượng, chú thích nguyên liệu và 2 mẹo riêng. Công thức là phiên bản gia đình, chưa được nấu thử.
+
+Giữ ID và nội dung recipes của 60 món cũ. Sửa tên nguyên liệu Mẻ thành **Cơm mẻ** ở rựa mận và giả cầy, cùng ghi chú liên quan, để không bị trùng Me trong collation không phân biệt dấu của MySQL. Giữ các nguyên liệu khác và món riêng ngoài bộ mẫu. Nhập lại 06 không tạo bản trùng; nếu đã có thêm món riêng thì tổng có thể cao hơn 100.
+
+Ảnh căn bếp lưu tại `app/assets/backgrounds/kitchen.jpg`, phủ màn hình và giữ cố định khi cuộn. Phần nội dung có nền kem sáng và rộng tối đa 1280 px; ảnh hiện rõ ở hai bên màn hình lớn. Điện thoại có viền nền nhỏ, bố cục một cột. Phân trang 12 món, tổng 9 trang; nút phân trang xuống dòng khi hẹp. Nền được ẩn trong bản in HTML, PDF vẫn dùng trang giấy sáng. Không tải ảnh/phông từ dịch vụ ngoài.
+
+Giữ bộ lọc 1–15, 16–30, 31–45, 46–60, 61–90 và trên 90 phút; thêm lựa chọn đúng 15/30/45/60/90. **Đúng 60 phút** chỉ trả giá trị 60, không trả món 20 phút. Từ khóa, danh mục, thời gian và sắp xếp được giữ khi chuyển trang. Thời gian là ước tính đã lưu; trang chi tiết ghi rõ thời gian ngâm/làm lạnh bổ sung với các món cần chuẩn bị trước.
+
+**Tải PDF** là liên kết `download.php?id=...`, trả file đính kèm trực tiếp từ dữ liệu hiện tại. PDF A4 có tiếng Việt, đủ nguyên liệu, ghi chú, bước và mẹo; không cần JavaScript, máy in hoặc ghi file vào thư mục app. **In công thức** mở bản in HTML, chỉ gọi hộp thoại in khi bấm nút hoặc Ctrl + P. Thư viện/phông đi kèm trong `app/lib/` và `app/assets/fonts/`; không cần Composer hoặc sửa Dockerfile. Phiên bản/giấy phép: [docs/THU_VIEN_PDF.md](docs/THU_VIEN_PDF.md).
+
+Kiểm chứng: SQL fixture nhập lặp, giữ món cũ/món riêng và mô phỏng collation tên không phân biệt dấu; chính PHP 8.4 chạy 100 chi tiết, 100 bản in và 100 endpoint PDF, 9 trang danh sách. Đối chiếu 11 bộ lọc và các giá trị cận. Chromium kiểm tra ảnh, tải file, checkbox, CSP, JavaScript tắt và bố cục 320/390/768/1366/1920 px. Đối chiếu đủ nội dung/lề của 100 PDF, render 7 PDF đại diện (11 trang). Các hàm mbstring gốc được tắt để kiểm tra polyfill. Đây là kiểm tra biệt lập, chưa phải MySQL/Windows của sinh viên.
+
+Ảnh Windows mới xác nhận web đang có 60 món. Sau khi áp dụng 06, thực hiện [docs/KIEM_TRA_100_MON.md](docs/KIEM_TRA_100_MON.md) và chụp minh chứng thật. Hình giao diện mẫu trong docs được chụp từ môi trường kiểm tra, không dùng làm minh chứng hệ thống đã chạy trên Windows.
+
+## Các lần nâng cấp trước
+
+Xem `HUONG_DAN_NANG_CAP.txt`. Với MySQL đang có dữ liệu và chưa nhập bản mở rộng, sao lưu trước rồi nhập riêng `database/03_expand_recipes.sql` bằng phpMyAdmin. Tệp này thêm 27 công thức và các nguyên liệu/danh mục cần thiết trong một transaction, không xóa hoặc cập nhật món cũ; nhập lại không nhân đôi các mẫu này. Không xóa volume để chạy lại seed.
+
+Bản cập nhật đã kiểm tra cú pháp bằng PHP 8.4 WASM, chạy truy vấn và nhập SQL hai lần trên SQLite fixture (30 công thức, 167 liên kết nguyên liệu). Đã kiểm tra tìm kiếm, lọc thời gian, phân trang, chi tiết, 404, gợi ý ngẫu nhiên, checkbox và giao diện 390px/1440px bằng Chromium. Đây là kiểm tra biệt lập. Ảnh Windows ngày 04/10/2026 sau đó xác nhận phpMyAdmin nhập 03_expand_recipes.sql thành công (365 truy vấn); trang chủ hiển thị 30 công thức, 8 danh mục, 59 nguyên liệu. Ảnh Windows mới xác nhận ảnh JPEG đã hiện ở món Sữa chua trái cây. Bản ảnh trước chỉ đổi app, không nhập thêm SQL. Bản 40 món bên dưới có một SQL mới, cần nhập để đổi nội dung.
+
+## Cập nhật 40 món và công thức chi tiết
+
+Áp dụng sau bản 30 món. Xem `HUONG_DAN_40_MON.txt`: chép các mục trong gói cập nhật vào dự án, nhập **riêng `database/04_detailed_recipes.sql`** bằng phpMyAdmin rồi Ctrl + F5. Không chạy lại 01/02/03 trên máy hiện tại.
+
+04 viết lại nguyên liệu, mô tả và hướng dẫn cho 30 món mẫu hiện có, thêm 10 món và ảnh mới. Các ID món cũ được giữ, nên đường dẫn `recipe.php?id=...` vẫn dùng được. Dữ liệu ngoài bộ 40 tên món không bị thay đổi. Nhập lại 04 không tạo thêm bản trùng. Những nguyên liệu cũ không còn dùng được giữ lại thay vì xóa khỏi danh mục.
+
+Bốn bảng chính giữ cấu trúc hiện tại. Bảng phụ **recipe_details** có khóa chính/khóa ngoại recipe_id, ingredient_notes (JSON lưu dạng TEXT), tips (TEXT) và time_note. Bảng phụ lưu chú thích sơ chế và mẹo riêng; instructions vẫn nằm trong recipes, quantity/unit vẫn ở recipe_ingredients. Vì có thêm bảng phụ, sơ đồ DB của bản này có **5 bảng**.
+
+Bản 40 ban đầu dùng hộp thoại in để lưu PDF. Người dùng đã nhập SQL 04 thành công nhưng cho biết chưa lưu được file. Bản 60 đã thay thao tác lưu bằng nút tải PDF trực tiếp; bản 100 giữ chức năng này, như mô tả ở mục cập nhật hiện tại; nút in vẫn được giữ riêng.
 
 ## Dịch vụ và đường dẫn
 
@@ -100,6 +138,8 @@ docker compose up -d
 docker compose ps
 ```
 
+Trên máy mới với volume MySQL trống, Docker tự nhập lần lượt `database/01_schema.sql` đến `database/06_hundred_recipes.sql` để tạo đủ 100 công thức. Nếu đang dùng database cũ, sao lưu rồi nhập các SQL nâng cấp còn thiếu theo thứ tự 03 → 04 → 05 → 06; máy đã có 60 món chỉ nhập 06.
+
 Seed chỉ tự chạy khi MySQL khởi tạo volume trống. Không dùng `docker compose down -v` trên dự án có dữ liệu cần giữ.
 
 ## Kiểm chứng và demo
@@ -154,7 +194,7 @@ Commit 3 c2bf988 đã push lên main, gồm Loki/Promtail và ba truy vấn LogQ
 
 ## Ảnh và phông
 
-Ba ảnh món trong app/assets được tạo bằng công cụ imagegen tích hợp, chế độ tạo ảnh mới; đây là ảnh minh họa AI, không phải ảnh tự chụp của sinh viên. Ảnh mô tả đồ ăn Việt Nam, ánh sáng tự nhiên dịu, đồ gốm tông kem, bàn gỗ/vải linen, phong cách phù hợp giao diện xanh lá/kem. Logo và icon viết bằng SVG.
+Ba ảnh món ban đầu trong app/assets được tạo bằng công cụ imagegen tích hợp, chế độ tạo ảnh mới; đây là ảnh minh họa AI, không phải ảnh tự chụp của sinh viên. Ảnh mô tả đồ ăn Việt Nam, ánh sáng tự nhiên dịu, đồ gốm tông kem, bàn gỗ/vải linen, phong cách phù hợp giao diện xanh lá/kem. Logo và icon viết bằng SVG.
 
 Noto Serif Regular/Italic được lấy nguyên tệp từ kho chính thức https://github.com/notofonts/noto-fonts/tree/main/hinted/ttf/NotoSerif. Giữ SIL OFL 1.1 tại app/assets/fonts/OFL.txt; phông/ảnh được phục vụ cùng website, phù hợp CSP.
 

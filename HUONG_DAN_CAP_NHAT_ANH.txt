@@ -1,0 +1,43 @@
+BẾP NHÀ — CẬP NHẬT ẢNH CHO CẢ 30 CÔNG THỨC
+
+Dùng sau khi đã áp dụng bep-nha-nang-cap và nhập 27 công thức mới.
+Gói này bổ sung 27 ảnh JPEG và đổi cách chọn ảnh trong PHP.
+Ba ảnh mẫu cũ (trứng, canh rau ngót, cơm chiên trứng cà rốt) vẫn được dùng.
+
+CÁCH ÁP DỤNG
+1. Giải nén bep-nha-anh-mon-an.zip vào một thư mục riêng.
+2. Mở thư mục đã giải nén. Chọn các mục bên trong:
+   app, docs, README.md, HUONG_DAN_CAP_NHAT_ANH.txt.
+3. Nhấn Ctrl + C.
+4. Mở C:\Users\basiu\recipe-website và nhấn Ctrl + V.
+5. Chọn Replace the files in the destination khi được hỏi;
+   gộp thư mục app và docs, giữ những file khác có sẵn.
+6. Mở http://localhost:18080/index.php rồi nhấn Ctrl + F5.
+7. Kiểm tra cả trang 1, 2, 3; mở vài công thức như Thịt kho trứng,
+   Canh chua cá, Bánh mì trứng, Sinh tố xoài để xem ảnh chi tiết.
+
+Chép các mục BÊN TRONG vào dự án; không chép nguyên thư mục
+bep-nha-anh-mon-an thành một thư mục con của recipe-website.
+Không cần nhập SQL lần nữa, không đổi .env, không xóa volume MySQL.
+Không cần build lại: Docker đang mount trực tiếp app.
+
+NẾU CÒN HIỆN HÌNH VẼ
+- Kiểm tra đã thay app\functions.php bằng file mới chưa.
+- Kiểm tra app\assets\photos có đủ recipe-01.jpg đến recipe-27.jpg.
+- Nhấn Ctrl + F5; giữ Docker Desktop chạy.
+- Nếu có lỗi, chụp màn hình và gửi để đối chiếu.
+
+ẢNH VÀ BÁO CÁO
+Ảnh được tạo bằng công cụ imagegen tích hợp, là ảnh minh họa AI
+có phong cách ảnh chụp. Không ghi là ảnh tự chụp của sinh viên.
+Nguồn tạo, ánh xạ tên món và toàn bộ prompt: docs\ANH_MON_AN.md.
+Đã kiểm tra từng ảnh; JPEG giữ nguyên kích thước 1536 x 1024.
+
+LƯU GITHUB SAU KHI KIỂM TRA TRÊN WINDOWS
+Bản mở rộng và bản ảnh có thể lưu cùng một commit nếu chưa commit
+bản mở rộng. Trong CMD tại recipe-website, chạy từng lệnh:
+git diff --check
+git add app database/03_expand_recipes.sql README.md HUONG_DAN_NANG_CAP.txt HUONG_DAN_CAP_NHAT_ANH.txt docs/ANH_MON_AN.md
+git diff --cached --stat
+git commit -m "Expand recipes and add food photos for the full collection"
+git push origin main
